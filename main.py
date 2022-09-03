@@ -30,12 +30,14 @@ def unit_pick(pick):
 
 def recalculate(list, unit):
     global sum_var
-    i=0
+    i = 0
     list3.delete(0, END)
+    list2.delete(0,END)
     sum = 0
     for i in range(i, list.size()):
         x = calculate(list1.get(i), unit)
         list3.insert(i, round(x[1], 2))
+        list2.insert(i, x[0])
         sum = sum + x[1]
         i = i+1
     sum_var = str(round(sum, 2))
@@ -61,18 +63,35 @@ def calculate(file,unit):
 
 def drop_inside_list_box(list,unit):
     global sum_var
-    sum = 0
+    if(sum_var!= "XXXX"):
+        sum = float(sum_var)
+    else:
+        sum = 0
     for item in list:
         list1.insert("end", item)
         x = calculate(item, unit)
         list2.insert("end", x[0])
         list3.insert("end", round(x[1], 2))
         sum = sum + x[1]
-    sum_var = sum
+    sum_var = str(round(sum, 2))
 
     sum_label_text_update()
     pass
 
+def deleteselected():
+    list1.delete(ANCHOR)
+
+def delete(listbox):
+
+    global things
+    # Delete from Listbox
+    selection = list1.curselection()
+    list1.delete(selection[0])
+    # Delete from list that provided it
+    #value = eval(list1.get(selection[0]))
+    #ind = things.index(value)
+    #del(things[ind])
+    recalculate(list1,unit)
 
 def select_file(unit):
     filetypes = (
@@ -95,7 +114,6 @@ unit = 10000.0
 screen = TkinterDnD.Tk()
 screen.geometry("800x400")
 screen.title("PDF Surface Calculator")
-
 l1 = Label(screen, text="File name")
 l1.grid(row=0, column=0, columnspan=2)
 
@@ -131,8 +149,10 @@ list3.grid(row=1, column=3, sticky="N")
 
 list1.configure(yscrollcommand=sb1.set)
 sb1.configure(command=list1.yview)
-print("test")
 open_button = Button(screen, text='Open a File', command=lambda: select_file(unit))
 open_button.grid(row=2, column=0)
-print("test2")
+
+
+b = Button(screen, text = "delete selection", command=lambda: delete(list1))
+b.grid(row=3, column=0)
 screen.mainloop()
